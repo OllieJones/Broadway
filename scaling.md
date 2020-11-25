@@ -165,10 +165,27 @@ function resizeWindow() {
     }
   }
   const dimensions = {
-        width:Math.round( tWidth ), 
-        height:  Math.round( tHeight )}
+        width:  Math.round( tWidth ), 
+        height: Math.round( tHeight )}
   broadwayPLayer.setTargetDimensions( dimensions )
 }
+```
+
+## When the user resizes the window
+
+The HTML and CSS in this example use divs with 100% width and height, to fill the window they're in.  We'll have to use some Javascript to detect if the user (the person looking at the browser) changes the window size with a `'resize'` event. Then we'll call `resizeWindow()`.
+
+That looks like this. It's important to debounce the `'resize'` event, because when the user drags a browser window outline it delivers many of those events. 
+
+
+```javascript
+function resizeEvent() {
+  if( resizeTimeout ) window.clearTimeout( resizeTimeout )
+  resizeTimeout = window.setTimeout( resizeWindow, 250 )
+}
+
+window.addEventListener( 'resize', resizeEvent )
+
 ```
 
 
