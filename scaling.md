@@ -8,7 +8,7 @@ So, how can we handle that situation? Several ways.
 
 * Stretch the video *anamorphically*. That is, give it different scales in width and height so it fill the element. This distorts the video, so stretching is usually not a good choice.
 
-* Scale the video, by *letterboxing* it so the whole video can be seen in the element. If the element (the div) for showing the video is too high for the video we get this kind of result, with blank areas at the top and bottom of the element. When rendering the video we stretch it so it fits the width of the div.
+* Scale the video, by *letterboxing* it so the whole video can be seen in the element. If the element (the div) for showing the video is too high for the video we get this kind of result, with blank background areas at the top and bottom of the element. When rendering the video we stretch it so it fits the width of the div.
 
 ```
 +------------------------------------------+
@@ -24,7 +24,7 @@ So, how can we handle that situation? Several ways.
 +------------------------------------------+
 ```
 
-   If the element for showing the div is too wide for the video we get this kind of result, with blank areas at the left and right of the video. When rendering the video we stretch it so it fits the height of the div.
+   If the element for showing the div is too wide for the video we get this kind of result, with blank background areas at the left and right of the video. When rendering the video we stretch it so it fits the height of the div.
 
 ```
 +------------------------------------------+
@@ -35,7 +35,7 @@ So, how can we handle that situation? Several ways.
 +------------------------------------------+
 ```
  
- * *Clip* the video, trimming off part of it on the left and right, or top and bottom, so it fills the element. This gives a pleasing result to the viewer, but loses a bit of it.  For many applications clipping is the right choice. 
+ * *Clip* the video, trimming off part of it on the left and right, or top and bottom, so it fills the element. This gives a pleasing result to the viewer, but loses a bit of the video image.  For many applications clipping is the right choice. 
  
  ```
     +-----------------------------+
@@ -50,7 +50,7 @@ So, how can we handle that situation? Several ways.
 
 ### HTML and CSS
 
-We need a div for Broadway to use to render the incoming video.  For our letterboxing or clipping to work we need two nested divs with HTML like this.  Broadway creates its own canvas element in the div.videocontainer.
+We need a div for Broadway to use to render the incoming video.  For our letterboxing or clipping to work we start with two nested divs with HTML like this.  Broadway creates its own canvas element in the `div.videocontainer`.
 
 ```html
 <div id="container">
@@ -100,11 +100,11 @@ We need CSS like this
 We need to handle Broadway's `onFrameSizeChange` event. When delivered, that event tells us some important dimensions.  When we get the incoming video dimensions, or if they  change, we need to resize the element -- we'll call it the *window* -- where we render the video.
 
 ```javascript
-const videoTag = document.querySelector('div#container div.videocontainer')
-let broadwayPlayer = // create the BroadwayPlayer object here.
+var videoTag = document.querySelector('div#container div.videocontainer')
+var broadwayPlayer = // create the BroadwayPlayer object here.
 videoTag.appendChild(broadwayPlayer.domNode)
-let sourceWidth = 0
-let sourceHeight = 0
+var sourceWidth = 0
+var sourceHeight = 0
 broadwayPlayer.onFrameSizeChange = function( frameData ) {
   broadwayFrame = frameData
   if (    sourceWidth !== frameData.sourceWidth 
@@ -122,18 +122,18 @@ And we need to respond to the dimension change. To do that we call the `resizeWi
 
 ### Resizing the window
 
-`resizeWinod()` looks something like this. It has to do some work to handle the letterboxing or clipping. 
+`resizeWindow()` looks something like this. It has to do some work to handle the letterboxing or clipping. 
 
 ```javascript
-const scalingMethod = 'scale'      // or 'letterbox' or 'stretch' 
-let resizeTimeout
+var scalingMethod = 'scale'      // or 'letterbox' or 'stretch' 
+var resizeTimeout
 
 function resizeWindow() {
   resizeTimeout = null
-  const canvasTag = videoTag.querySelector( 'canvas' )
+  var canvasTag = videoTag.querySelector( 'canvas' )
   if( !canvasTag ) return
-  const canvasStyle = canvasTag.style
-  const rect = videoTag.getBoundingClientRect()
+  var canvasStyle = canvasTag.style
+  var rect = videoTag.getBoundingClientRect()
   var tWidth = rect.width
   var tHeight = rect.height
   var offset = 0
@@ -167,7 +167,7 @@ function resizeWindow() {
   const dimensions = {
         width:  Math.round( tWidth ), 
         height: Math.round( tHeight )}
-  broadwayPLayer.setTargetDimensions( dimensions )
+  broadwayPlayer.setTargetDimensions( dimensions )
 }
 ```
 
